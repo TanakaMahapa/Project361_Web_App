@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL/OKLCH format for v4.
+*/
+
+@theme {
+  /* Smart Home App Dark Theme - converted to OKLCH for better color space */
+  --color-background: oklch(0.1882 0.0392 258.338);
+  --color-foreground: oklch(0.9804 0.0065 247.858);
+  --color-card: oklch(0.2275 0.0392 258.338);
+  --color-card-foreground: oklch(0.9804 0.0065 247.858);
+  --color-popover: oklch(0.2275 0.0392 258.338);
+  --color-popover-foreground: oklch(0.9804 0.0065 247.858);
+  --color-primary: oklch(0.7529 0.1686 85.872);
+  --color-primary-foreground: oklch(0.1882 0.0392 258.338);
+  --color-secondary: oklch(0.2275 0.0392 258.338);
+  --color-secondary-foreground: oklch(0.9804 0.0065 247.858);
+  --color-muted: oklch(0.3412 0.0294 258.338);
+  --color-muted-foreground: oklch(0.6824 0.0196 258.338);
+  --color-accent: oklch(0.7529 0.1686 85.872);
+  --color-accent-foreground: oklch(0.1882 0.0392 258.338);
+  --color-destructive: oklch(0.7176 0.1551 22.181);
+  --color-destructive-foreground: oklch(0.9804 0.0065 247.858);
+  --color-border: oklch(0.3412 0.0294 258.338);
+  --color-input: oklch(0.3412 0.0294 258.338);
+  --color-ring: oklch(0.7529 0.1686 85.872);
+  
+  /* Custom app colors */
+  --color-app-navy: oklch(0.1882 0.0392 258.338);
+  --color-app-navy-light: oklch(0.2275 0.0392 258.338);
+  --color-app-navy-lighter: oklch(0.3412 0.0294 258.338);
+  --color-app-gold: oklch(0.7529 0.1686 85.872);
+  --color-app-emergency: oklch(0.7176 0.1551 22.181);
+  --color-app-success: oklch(0.5529 0.1294 142.495);
+  
+  /* Sidebar colors */
+  --color-sidebar-background: oklch(0.9804 0.0065 247.858);
+  --color-sidebar-foreground: oklch(0.3294 0.0196 258.338);
+  --color-sidebar-primary: oklch(0.1569 0.0294 258.338);
+  --color-sidebar-primary-foreground: oklch(0.9804 0.0065 247.858);
+  --color-sidebar-accent: oklch(0.9608 0.0157 247.858);
+  --color-sidebar-accent-foreground: oklch(0.1569 0.0294 258.338);
+  --color-sidebar-border: oklch(0.9216 0.0196 258.338);
+  --color-sidebar-ring: oklch(0.6627 0.2225 262.881);
+  
+  /* Border radius */
+  --radius: 0.75rem;
+}
+
+/* Dark mode theme */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    /* Dark mode uses same colors as our app theme */
+    --color-background: oklch(0.1882 0.0392 258.338);
+    --color-foreground: oklch(0.9804 0.0065 247.858);
+    --color-card: oklch(0.2275 0.0392 258.338);
+    --color-card-foreground: oklch(0.9804 0.0065 247.858);
+    --color-popover: oklch(0.2275 0.0392 258.338);
+    --color-popover-foreground: oklch(0.9804 0.0065 247.858);
+    --color-primary: oklch(0.7529 0.1686 85.872);
+    --color-primary-foreground: oklch(0.1882 0.0392 258.338);
+    --color-secondary: oklch(0.2275 0.0392 258.338);
+    --color-secondary-foreground: oklch(0.9804 0.0065 247.858);
+    --color-muted: oklch(0.3412 0.0294 258.338);
+    --color-muted-foreground: oklch(0.6824 0.0196 258.338);
+    --color-accent: oklch(0.7529 0.1686 85.872);
+    --color-accent-foreground: oklch(0.1882 0.0392 258.338);
+    --color-destructive: oklch(0.7176 0.1551 22.181);
+    --color-destructive-foreground: oklch(0.9804 0.0065 247.858);
+    --color-border: oklch(0.3412 0.0294 258.338);
+    --color-input: oklch(0.3412 0.0294 258.338);
+    --color-ring: oklch(0.7529 0.1686 85.872);
+    
+    /* Dark sidebar colors */
+    --color-sidebar-background: oklch(0.1569 0.0294 258.338);
+    --color-sidebar-foreground: oklch(0.9608 0.0157 247.858);
+    --color-sidebar-primary: oklch(0.5529 0.1765 262.881);
+    --color-sidebar-primary-foreground: oklch(1 0 0);
+    --color-sidebar-accent: oklch(0.2157 0.0196 258.338);
+    --color-sidebar-accent-foreground: oklch(0.9608 0.0157 247.858);
+    --color-sidebar-border: oklch(0.2157 0.0196 258.338);
+    --color-sidebar-ring: oklch(0.6627 0.2225 262.881);
+  }
+}
+
+/* Global styles using v4 syntax */
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Custom CSS properties for gradients and shadows (these stay as CSS custom properties) */
+:root {
+  /* Gradients - these remain as CSS custom properties since they're complex values */
+  --gradient-primary: linear-gradient(135deg, var(--color-app-navy), var(--color-app-navy-light));
+  --gradient-gold: linear-gradient(135deg, var(--color-app-gold), oklch(0.7843 0.1529 85.872));
+  --gradient-emergency: linear-gradient(135deg, var(--color-app-emergency), oklch(0.7647 0.1765 22.181));
+  
+  /* Shadows - these remain as CSS custom properties */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 30px oklch(0.7529 0.1686 85.872 / 0.2);
+}
