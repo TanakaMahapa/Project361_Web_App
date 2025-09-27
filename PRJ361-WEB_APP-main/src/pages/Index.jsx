@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Menu, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sidebar } from "@/components/Sidebar";
-import { MotionAlert } from "@/components/MotionAlert";
-import { EmergencyAlert } from "@/components/EmergencyAlert";
-import { MissedNotifications } from "@/components/MissedNotifications";
+import Sidebar from "@/components/Sidebar";
+import MotionAlert from "@/components/MotionAlert";
+import EmergencyAlert from "@/components/EmergencyAlert";
+import MissedNotifications from "@/components/MissedNotifications";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
