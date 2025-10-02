@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import "./MQBroker/MQTT.js"; // initialize MQTT in browser
 
 
 const queryClient = new QueryClient();
@@ -16,7 +17,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <SonnerToaster />
+      <Sonner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

@@ -1,7 +1,7 @@
 import mqtt from "mqtt/dist/mqtt";  // important: browser version
 
 // Broker over WebSocket (secure)
-const brokerUrl = "wss://test.mosquitto.org:8081/mqtt";
+const brokerUrl = import.meta.env.VITE_MQTT_URL || "wss://test.mosquitto.org:8081/mqtt";
 
 // Topics
 const TOPIC_MOTION = "home/door/motion";
@@ -17,7 +17,7 @@ client.on("connect", () => {
   console.log("✅ Connected to broker via WebSocket");
 
   // Subscribe
-  client.subscribe([TOPIC_MOTION, TOPIC_BED_ACK], { qos: 2 }, (err) => {
+  client.subscribe([TOPIC_MOTION, TOPIC_BED_ACK], { qos: 1 }, (err) => {
     if (err) console.error("❌ Subscribe error:", err);
     else console.log("📡 Subscribed to:", TOPIC_MOTION, "and", TOPIC_BED_ACK);
   });

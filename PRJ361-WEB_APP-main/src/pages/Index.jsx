@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Sidebar from "@/components/Sidebar";
@@ -6,11 +6,34 @@ import MotionAlert from "@/components/MotionAlert";
 import EmergencyAlert from "@/components/EmergencyAlert";
 import MissedNotifications from "@/components/MissedNotifications";
 import { useToast } from "@/hooks/use-toast";
+import { fetchLatestRecord } from "@/api/client";
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [emergencyActive, setEmergencyActive] = useState(true);
+  const [emergencyActive, setEmergencyActive] = useState(false);
+  const [latest, setLatest] = useState(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const data = await fetchLatestRecord();
+        if (!cancelled) {
+          setLatest(data);
+          setEmergencyActive(Boolean(data?.motionDetectedAt));
+        }
+      } catch (e) {
+        // ignore for now, toast optional
+      }
+    };
+    load();
+    const t = setInterval(load, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
+  }, []);
 
   // Mock data
   const missedNotifications = [
@@ -68,7 +91,7 @@ const Index = () => {
         {/* Dashboard Content */}
         <main className="p-4 space-y-6 max-w-2xl mx-auto">
           {/* Motion Detection */}
-          <MotionAlert lastDetected="10:00AM" isActive={true} />
+          <MotionAlert isActive={!!emergencyActive} />
           
           {/* Set Alarm Button */}
           <div className="flex justify-center">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Sidebar } from "@/components/Sidebar";
+import { fetchLatestRecord } from "@/api/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,6 +36,11 @@ const Settings = () => {
       description: `Flashing duration set to ${duration}`,
     });
   };
+
+  const [latest, setLatest] = useState(null);
+  useEffect(() => {
+    fetchLatestRecord().then(setLatest).catch(() => {});
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -170,17 +176,32 @@ const Settings = () => {
             <CardContent className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Device:</span>
-                <span className="text-card-foreground">Smart Door Motion Sensor</span>
+                <span className="text-card-foreground">{latest?.device ?? '—'}</span>
               </div>
               <Separator />
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Version:</span>
-                <span className="text-card-foreground">v2.1.0</span>
+                <span className="text-muted-foreground">User:</span>
+                <span className="text-card-foreground">{latest?.username ?? '—'}</span>
               </div>
               <Separator />
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Status:</span>
-                <span className="text-green-500">Connected</span>
+                <span className="text-muted-foreground">Motion detected:</span>
+                <span className="text-card-foreground">{latest?.motionDetectedAt ? new Date(latest.motionDetectedAt).toLocaleString() : '—'}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">LED (alert):</span>
+                <span className="text-card-foreground">{latest?.ledAlertAt ? new Date(latest.ledAlertAt).toLocaleString() : '—'}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Gas detected:</span>
+                <span className="text-card-foreground">{latest?.gasDetectedAt ? new Date(latest.gasDetectedAt).toLocaleString() : '—'}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Vibration (alert):</span>
+                <span className="text-card-foreground">{latest?.vibrationAlertAt ? new Date(latest.vibrationAlertAt).toLocaleString() : '—'}</span>
               </div>
             </CardContent>
           </Card>
