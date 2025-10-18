@@ -1,24 +1,57 @@
-import { useState } from "react";
-import { Menu, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, ArrowLeft, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Sidebar from "@/components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import useSocket from "../hooks/useSocket"; // ✅ import your socket hook
 
 const Settings = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [vibrationStrength, setVibrationStrength] = useState("Mid");
   const [flashingDuration, setFlashingDuration] = useState("3s");
   const [missedAlerts, setMissedAlerts] = useState(true);
+  const [arduinoConnected, setArduinoConnected] = useState(false); // ✅ new state
   const navigate = useNavigate();
   const { success } = useToast();
+  const { socket } = useSocket(); // ✅ access socket instance
 
   const vibrationOptions = ["Low", "Mid", "High"];
   const durationOptions = ["1s", "3s", "5s"];
+
+  // ✅ listen for connection/disconnection events
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleConnect = () => {
+      setArduinoConnected(true);
+      success("Arduino connected");
+    };
+
+    const handleDisconnect = () => {
+      setArduinoConnected(false);
+      success("Arduino disconnected");
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+
+    // Clean up listeners on unmount
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+    };
+  }, [socket, success]);
 
   const handleVibrationChange = (strength) => {
     setVibrationStrength(strength);
@@ -36,13 +69,20 @@ const Settings = () => {
       <div className="flex-1 lg:ml-64">
         <header className="bg-card border-b border-border p-4 shadow-sm">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(true)} className="lg:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden"
+            >
               <Menu className="w-5 h-5" />
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-card-foreground">Setting</h1>
+            <h1 className="text-2xl font-bold text-card-foreground">
+              Settings
+            </h1>
           </div>
         </header>
 
@@ -51,7 +91,9 @@ const Settings = () => {
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>Vibration</CardTitle>
-              <CardDescription>Configure vibration strength for alerts</CardDescription>
+              <CardDescription>
+                Configure vibration strength for alerts
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Label className="mb-3 block">Strength</Label>
@@ -59,7 +101,9 @@ const Settings = () => {
                 {vibrationOptions.map((option) => (
                   <Button
                     key={option}
-                    variant={vibrationStrength === option ? "default" : "outline"}
+                    variant={
+                      vibrationStrength === option ? "default" : "outline"
+                    }
                     size="sm"
                     onClick={() => handleVibrationChange(option)}
                     className="flex-1"
@@ -75,7 +119,9 @@ const Settings = () => {
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>LED</CardTitle>
-              <CardDescription>Configure LED flash settings for visual alerts</CardDescription>
+              <CardDescription>
+                Configure LED flash settings for visual alerts
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Label className="mb-3 block">Flashing duration</Label>
@@ -83,7 +129,9 @@ const Settings = () => {
                 {durationOptions.map((option) => (
                   <Button
                     key={option}
-                    variant={flashingDuration === option ? "default" : "outline"}
+                    variant={
+                      flashingDuration === option ? "default" : "outline"
+                    }
                     size="sm"
                     onClick={() => handleDurationChange(option)}
                     className="flex-1"
@@ -99,27 +147,35 @@ const Settings = () => {
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>Notification</CardTitle>
-              <CardDescription>Manage your notification preferences</CardDescription>
+              <CardDescription>
+                Manage your notification preferences
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="missed-alerts">Missed Alerts</Label>
-                  <p className="text-sm text-muted-foreground">Show notifications for missed alerts</p>
+                  <p className="text-sm text-muted-foreground">
+                    Show notifications for missed alerts
+                  </p>
                 </div>
                 <Switch
                   id="missed-alerts"
                   checked={missedAlerts}
                   onCheckedChange={(checked) => {
                     setMissedAlerts(checked);
-                    success(checked ? "Missed Alerts Enabled" : "Missed Alerts Disabled");
+                    success(
+                      checked
+                        ? "Missed Alerts Enabled"
+                        : "Missed Alerts Disabled"
+                    );
                   }}
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* System Info */}
+          {/* ✅ System Info */}
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>System Information</CardTitle>
@@ -135,9 +191,16 @@ const Settings = () => {
                 <span>v2.1.0</span>
               </div>
               <Separator />
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span>Status:</span>
-                <span className="text-green-500">Connected</span>
+                <span
+                  className={`flex items-center gap-2 font-medium ${
+                    arduinoConnected ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  <Wifi className="w-4 h-4" />
+                  {arduinoConnected ? "Connected" : "Disconnected"}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -148,3 +211,4 @@ const Settings = () => {
 };
 
 export default Settings;
+

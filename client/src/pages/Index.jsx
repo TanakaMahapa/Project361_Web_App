@@ -6,45 +6,43 @@ import MotionAlert from "@/components/MotionAlert";
 import EmergencyAlert from "@/components/EmergencyAlert";
 import MissedNotifications from "@/components/MissedNotifications";
 import { useToast } from "@/hooks/use-toast";
+import Dashboard from "@/components/Dashboard";
+
+
+
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Alerts state
   const [motionActive, setMotionActive] = useState(true);
   const [emergencyActive, setEmergencyActive] = useState(true);
 
-  // Missed notifications state
-  const [missedNotifications, setMissedNotifications] = useState([
-    { id: "1", type: "motion", message: "Motion detected at front door", time: "2 hours ago" },
-    { id: "2", type: "system", message: "System maintenance completed", time: "1 day ago" }
-  ]);
-
   const { success } = useToast();
 
+  // Handle activating alarm
   const handleSetAlarm = () => {
     success("Motion detection alarm has been activated");
   };
 
+  // Handle dismissing motion alert
   const handleMotionDismiss = () => {
     setMotionActive(false);
     success("Motion alert dismissed");
   };
 
+  // Handle dismissing emergency alert
   const handleEmergencyDismiss = () => {
     setEmergencyActive(false);
     success("Emergency alert acknowledged and dismissed");
   };
 
-  const handleClearNotification = (id) => {
-    setMissedNotifications((prev) => prev.filter((n) => n.id !== id));
-    success("Notification cleared");
-  };
-
   return (
     <div className="min-h-screen bg-background flex">
+      {/* ===== Sidebar ===== */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* ===== Main Content ===== */}
       <div className="flex-1 lg:ml-64">
+        {/* ===== Header ===== */}
         <header className="bg-card border-b border-border p-4 shadow-sm">
           <div className="flex items-center gap-4">
             <Button
@@ -59,15 +57,17 @@ const Index = () => {
           </div>
         </header>
 
+        {/* ===== Main Section ===== */}
         <main className="p-4 space-y-6 max-w-2xl mx-auto">
-          {motionActive && (
-            <MotionAlert lastDetected="10:00AM" onDismiss={handleMotionDismiss} />
-          )}
+          {/* Real-time Motion Alert (via WebSocket) */}
+          <Dashboard />
+          {motionActive && <MotionAlert onDismiss={handleMotionDismiss} />}
 
+          {/* Set Alarm Button */}
           <div className="flex justify-center">
-            <Button 
-              variant="alarm" 
-              size="lg" 
+            <Button
+              variant="alarm"
+              size="lg"
               onClick={handleSetAlarm}
               className="w-full max-w-sm h-14 text-lg"
             >
@@ -76,14 +76,16 @@ const Index = () => {
             </Button>
           </div>
 
+          {/* Real-time Emergency Alert (if active) */}
           {emergencyActive && (
-            <EmergencyAlert activeTime="7:45 AM" onDismiss={handleEmergencyDismiss} />
+            <EmergencyAlert
+              activeTime="7:45 AM"
+              onDismiss={handleEmergencyDismiss}
+            />
           )}
 
-          <MissedNotifications 
-            notifications={missedNotifications} 
-            onClear={handleClearNotification} 
-          />
+          {/* 🔔 Real-time Missed Notifications */}
+          <MissedNotifications />
         </main>
       </div>
     </div>
@@ -91,3 +93,4 @@ const Index = () => {
 };
 
 export default Index;
+

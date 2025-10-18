@@ -1,26 +1,32 @@
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5001";
+const SOCKET_URL = "http://localhost:5001"; // must match your backend port
 
 export default function useSocket() {
-  const [socket, setSocket] = useState(null);
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    const s = io(SOCKET_URL);
-    setSocket(s);
+    const socket = io(SOCKET_URL, { transports: ["websocket"] });
 
-    s.on("alert", (data) => {
-      console.log("New Alert:", data);
-      setAlerts((prev) => [
-        { ...data, timestamp: new Date().toLocaleTimeString() },
-        ...prev,
-      ]);
+    socket.on("connect", () => {
+      console.log("Connected to Socket.io server");
     });
 
-    return () => s.disconnect();
+    // When backend emits new alert
+    socket.on("alertUpdate", (data) => {
+      console.log("New alert received:", data);
+      setAlerts((prev) => [...prev, data]);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from server");
+    });
+
+    return () => socket.disconnect();
   }, []);
 
-  return { socket, alerts };
+  return { alerts };
 }
+
+

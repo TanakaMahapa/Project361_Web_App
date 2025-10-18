@@ -1,8 +1,17 @@
+import { useEffect, useState } from "react";
 import { AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-const EmergencyAlert = ({ activeTime, onDismiss }) => {
+const EmergencyAlert = ({ onDismiss }) => {
+  const [activeTime, setActiveTime] = useState("");
+
+  useEffect(() => {
+    const now = new Date();
+    const formattedTime = now.toLocaleString(); // You can customize the format if needed
+    setActiveTime(formattedTime);
+  }, []);
+
   return (
     <Card className="bg-red-100 border border-red-300 shadow-md">
       <CardContent className="flex items-center justify-between p-4">
@@ -22,4 +31,5 @@ const EmergencyAlert = ({ activeTime, onDismiss }) => {
 };
 
 export default EmergencyAlert;
+
 
