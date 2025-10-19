@@ -4,7 +4,7 @@ const alertSchema = new mongoose.Schema({
   // LED alert timestamp
   ledAlert: {
     type: Date,
-    default: null
+    default: Date.now
   },
   
   // Device information
@@ -17,32 +17,32 @@ const alertSchema = new mongoose.Schema({
   // Gas detection timestamp
   gasDetected: {
     type: Date,
-    default: null
+    default: Date.now
   },
   
   // Motion detection timestamp
   motionDetected: {
     type: Date,
-    default: null
+    default: Date.now
   },
   
   // User credentials
   username: {
     type: String,
     required: true,
-    default: 'Tanaka'
+    default: 'Group5KP'
   },
   
   password: {
     type: String,
     required: true,
-    default: 'T@na12ka'
+    default: 'Te@m12Add'
   },
   
   // Vibration alert timestamp
   vibrationAlert: {
-    type: Date,
-    default: null
+     type: Date,
+     default: Date.now
   },
   
   // Additional metadata
