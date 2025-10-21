@@ -42,6 +42,7 @@ function handleMotion(payload) {
   let vibration = "STOP";
   let status = "CLEAR - No motion";
 
+  // Process actual motion states
   if (payload === "detected") {
     door_led = "RED";
     bed_led = "RED";

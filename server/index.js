@@ -3,6 +3,7 @@ import http from "http";
 import { Server } from "socket.io";
 import mqtt from "mqtt";
 import cors from "cors";
+import 'dotenv/config';
 import { connectDB } from "./mongodb.js";
 import Alert from "./models/Alert.js";
 import User from "./models/User.js";
@@ -24,6 +25,14 @@ const PORT = process.env.PORT || 5001;
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+//Connect to database first
+connectDB();
+
+// Rest of your Express setup...
+app.listen(3006, () => {
+  console.log('Server running on port 3006');
+});
 
 const server = http.createServer(app);
 const io = new Server(server, {
