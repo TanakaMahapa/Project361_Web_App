@@ -14,22 +14,22 @@ import { Separator } from "@/components/ui/separator";
 import Sidebar from "@/components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import useSocket from "../hooks/useSocket"; // ✅ import your socket hook
+import useSocket from "../hooks/useSocket"; // import your socket hook
 
 const Settings = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [vibrationStrength, setVibrationStrength] = useState("Mid");
   const [flashingDuration, setFlashingDuration] = useState("3s");
   const [missedAlerts, setMissedAlerts] = useState(true);
-  const [arduinoConnected, setArduinoConnected] = useState(false); // ✅ new state
+  const [arduinoConnected, setArduinoConnected] = useState(false); // new state
   const navigate = useNavigate();
   const { success } = useToast();
-  const { socket } = useSocket(); // ✅ access socket instance
+  const { socket } = useSocket(); // access socket instance
 
   const vibrationOptions = ["Low", "Mid", "High"];
   const durationOptions = ["1s", "3s", "5s"];
 
-  // ✅ listen for connection/disconnection events
+  // listen for connection/disconnection events
   useEffect(() => {
     if (!socket) return;
 
@@ -56,11 +56,21 @@ const Settings = () => {
   const handleVibrationChange = (strength) => {
     setVibrationStrength(strength);
     success(`Vibration strength set to ${strength}`);
+  
+    //send update to backend via socket
+    if (socket) {
+      socket.emit("updateVibration", strength);
+    }
   };
 
   const handleDurationChange = (duration) => {
     setFlashingDuration(duration);
     success(`Flashing duration set to ${duration}`);
+  
+    //send update to backend via socket
+    if (socket) {
+      socket.emit("updateLedDuration", duration);
+    }
   };
 
   return (
@@ -175,7 +185,7 @@ const Settings = () => {
             </CardContent>
           </Card>
 
-          {/* ✅ System Info */}
+          {/* System Info */}
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>System Information</CardTitle>

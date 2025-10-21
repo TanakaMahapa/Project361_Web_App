@@ -14,6 +14,8 @@ const MQTT_TOPIC_GAS = "home/door/gas";
 const MQTT_TOPIC_CONTROL = "smartdoor/control";
 const MQTT_TOPIC_VIBRATION = "home/bed/vibration";
 const MQTT_TOPIC_LED = "home/door/led";
+const MQTT_TOPIC_VIBRATION_SETTINGS = "home/settings/vibration";
+const MQTT_TOPIC_LED_SETTINGS = "home/settings/led";
 
 const PORT = process.env.PORT || 5001;
 
@@ -76,15 +78,31 @@ mqttClient.on("message", async (topic, message) => {
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
+  // Existing control
   socket.on("control-arduino", (data) => {
     console.log("Control Arduino:", data);
     mqttClient.publish(MQTT_TOPIC_CONTROL, data);
+  });
+
+  //Vibration Intensity Change
+  socket.on("updateVibration", (strength) => {
+    console.log("Vibration strength updated:", strength);
+    const payload = JSON.stringify({ strength });
+    mqttClient.publish(MQTT_TOPIC_VIBRATION_SETTINGS, payload);
+  });
+
+  // LED Duration Change
+  socket.on("updateLedDuration", (duration) => {
+    console.log("LED flash duration updated:", duration);
+    const payload = JSON.stringify({ duration });
+    mqttClient.publish(MQTT_TOPIC_LED_SETTINGS, payload);
   });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 });
+
 
 // ====== REST API ======
 app.get("/api/alerts", async (req, res) => {
