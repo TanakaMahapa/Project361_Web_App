@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 // Add fallback connection string
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://IOT_Admin:IOTPRJ_Admin2025@cluster0.bljmeys.mongodb.net/IOT_db';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/IOT_db';
 
 // Connect to MongoDB
 export const connectDB = async () => {

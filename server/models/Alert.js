@@ -4,7 +4,7 @@ const alertSchema = new mongoose.Schema({
   // LED alert timestamp
   ledAlert: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   
   // Device information
@@ -17,13 +17,13 @@ const alertSchema = new mongoose.Schema({
   // Gas detection timestamp
   gasDetected: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   
   // Motion detection timestamp
   motionDetected: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   
   // User credentials
@@ -42,24 +42,24 @@ const alertSchema = new mongoose.Schema({
   // Vibration alert timestamp
   vibrationAlert: {
      type: Date,
-     default: Date.now
+     default: Date.now()
   },
   
   // Additional metadata
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   
   updatedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   }
 });
 
 // Update the updatedAt field before saving
 alertSchema.pre('save', function(next) {
-  this.updatedAt = new Date();
+  this.updatedAt = new Date;
   next();
 });
 

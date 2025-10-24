@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, ArrowLeft, Wifi } from "lucide-react";
+import io from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -14,69 +15,49 @@ import { Separator } from "@/components/ui/separator";
 import Sidebar from "@/components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import useSocket from "../hooks/useSocket"; // import your socket hook
+
+const SOCKET_URL = "http://localhost:5001"
 
 const Settings = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [vibrationStrength, setVibrationStrength] = useState("Mid");
-  const [flashingDuration, setFlashingDuration] = useState("3s");
   const [missedAlerts, setMissedAlerts] = useState(true);
-  const [arduinoConnected, setArduinoConnected] = useState(false); // new state
+  const [arduinoConnected, setArduinoConnected] = useState(false);
+  const [lastSeen, setLastSeen] = useState(null); // new: store last connection time
   const navigate = useNavigate();
   const { success } = useToast();
-  const { socket } = useSocket(); // access socket instance
 
-  const vibrationOptions = ["Low", "Mid", "High"];
-  const durationOptions = ["1s", "3s", "5s"];
-
-  // listen for connection/disconnection events
   useEffect(() => {
-    if (!socket) return;
+    const socket = io(SOCKET_URL, { transports: ["websocket"] });
 
-    const handleConnect = () => {
-      setArduinoConnected(true);
-      success("Arduino connected");
-    };
+    socket.on("connect", () => {
+      console.log("Connected to Socket.io server");
+    });
 
-    const handleDisconnect = () => {
-      setArduinoConnected(false);
-      success("Arduino disconnected");
-    };
+    // Listen for Arduino status updates from the server
+    socket.on("arduinoStatus", (status) => {
+      console.log(" Arduino status:", status);
+      const isConnected = status === "connected";
+      setArduinoConnected(isConnected);
+      setLastSeen(new Date().toLocaleTimeString());
+      localStorage.setItem("arduinoStatus", status);
 
-    socket.on("connect", handleConnect);
-    socket.on("disconnect", handleDisconnect);
+      success(isConnected ? "Arduino connected" : "Arduino disconnected");
+    });
 
-    // Clean up listeners on unmount
-    return () => {
-      socket.off("connect", handleConnect);
-      socket.off("disconnect", handleDisconnect);
-    };
-  }, [socket, success]);
+    socket.on("disconnect", () => {
+      console.log(" Disconnected from Socket.io server");
+    });
 
-  const handleVibrationChange = (strength) => {
-    setVibrationStrength(strength);
-    success(`Vibration strength set to ${strength}`);
-  
-    //send update to backend via socket
-    if (socket) {
-      socket.emit("updateVibration", strength);
-    }
-  };
+    return () => socket.disconnect();
+  }, [success]);
+ 
 
-  const handleDurationChange = (duration) => {
-    setFlashingDuration(duration);
-    success(`Flashing duration set to ${duration}`);
-  
-    //send update to backend via socket
-    if (socket) {
-      socket.emit("updateLedDuration", duration);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 lg:ml-64">
+        {/* Header */}
         <header className="bg-card border-b border-border p-4 shadow-sm">
           <div className="flex items-center gap-4">
             <Button
@@ -90,69 +71,12 @@ const Settings = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-card-foreground">
-              Settings
-            </h1>
+            <h1 className="text-2xl font-bold text-card-foreground">Settings</h1>
           </div>
         </header>
 
         <main className="p-4 space-y-6 max-w-2xl mx-auto">
-          {/* Vibration */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>Vibration</CardTitle>
-              <CardDescription>
-                Configure vibration strength for alerts
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Label className="mb-3 block">Strength</Label>
-              <div className="flex gap-2">
-                {vibrationOptions.map((option) => (
-                  <Button
-                    key={option}
-                    variant={
-                      vibrationStrength === option ? "default" : "outline"
-                    }
-                    size="sm"
-                    onClick={() => handleVibrationChange(option)}
-                    className="flex-1"
-                  >
-                    {option}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* LED */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>LED</CardTitle>
-              <CardDescription>
-                Configure LED flash settings for visual alerts
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Label className="mb-3 block">Flashing duration</Label>
-              <div className="flex gap-2">
-                {durationOptions.map((option) => (
-                  <Button
-                    key={option}
-                    variant={
-                      flashingDuration === option ? "default" : "outline"
-                    }
-                    size="sm"
-                    onClick={() => handleDurationChange(option)}
-                    className="flex-1"
-                  >
-                    {option}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
+  
           {/* Notifications */}
           <Card className="bg-card border-border">
             <CardHeader>
@@ -198,7 +122,7 @@ const Settings = () => {
               <Separator />
               <div className="flex justify-between">
                 <span>Version:</span>
-                <span>v2.1.0</span>
+                <span>v1.1.0</span>
               </div>
               <Separator />
               <div className="flex justify-between items-center">
@@ -212,6 +136,11 @@ const Settings = () => {
                   {arduinoConnected ? "Connected" : "Disconnected"}
                 </span>
               </div>
+              {lastSeen && (
+                <div className="text-xs text-muted-foreground text-right">
+                  Last updated: {lastSeen}
+                </div>
+              )}
             </CardContent>
           </Card>
         </main>
@@ -221,4 +150,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
