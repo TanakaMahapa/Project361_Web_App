@@ -26,7 +26,7 @@ const alertSchema = new mongoose.Schema({
     default: Date.now()
   },
   
-  // User credentials
+ 
   username: {
     type: String,
     required: true,
