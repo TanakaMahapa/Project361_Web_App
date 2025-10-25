@@ -8,6 +8,9 @@ import MissedNotifications from "@/components/MissedNotifications";
 import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/components/Dashboard";
 
+
+
+
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [motionActive, setMotionActive] = useState(true);
@@ -15,7 +18,12 @@ const Index = () => {
 
   const { success } = useToast();
 
-// Handle dismissing motion alert
+  // Handle activating alarm
+  const handleSetAlarm = () => {
+    success("Motion detection alarm has been activated");
+  };
+
+  // Handle dismissing motion alert
   const handleMotionDismiss = () => {
     setMotionActive(false);
     success("Motion alert dismissed");
@@ -55,7 +63,19 @@ const Index = () => {
           <Dashboard />
           {motionActive && <MotionAlert onDismiss={handleMotionDismiss} />}
 
-        
+          {/* Set Alarm Button */}
+          <div className="flex justify-center">
+            <Button
+              variant="alarm"
+              size="lg"
+              onClick={handleSetAlarm}
+              className="w-full max-w-sm h-14 text-lg"
+            >
+              <Clock className="w-5 h-5 mr-2" />
+              SET AN ALARM
+            </Button>
+          </div>
+
           {/* Real-time Emergency Alert (if active) */}
           {emergencyActive && (
             <EmergencyAlert
