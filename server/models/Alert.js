@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import mongoose from 'mongoose';
 
 const alertSchema = new mongoose.Schema({
@@ -71,3 +72,14 @@ alertSchema.index({ username: 1 });
 const Alert = mongoose.model('Alert', alertSchema);
 
 export default Alert;
+=======
+const mongoose = require("mongoose");
+
+const alertSchema = new mongoose.Schema({
+  type: { type: String, required: true }, // "motion" or "gas"
+  message: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+});
+
+module.exports = mongoose.model("Alert", alertSchema);
+>>>>>>> Stashed changes

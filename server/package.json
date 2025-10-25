@@ -1,10 +1,15 @@
 {
   "name": "server",
   "version": "1.0.0",
+<<<<<<< Updated upstream
   "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+=======
+  "main": "index.js",
+  "scripts": {
+>>>>>>> Stashed changes
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,7 +19,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
+<<<<<<< Updated upstream
     "mongoose": "^8.19.1",
+=======
+>>>>>>> Stashed changes
     "mqtt": "^5.14.1",
     "socket.io": "^4.8.1"
   }

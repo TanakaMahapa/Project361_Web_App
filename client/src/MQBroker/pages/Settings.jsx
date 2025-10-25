@@ -14,22 +14,18 @@ import { Separator } from "@/components/ui/separator";
 import Sidebar from "@/components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import useSocket from "../hooks/useSocket"; // ✅ import your socket hook
+import useSocket from "../hooks/useSocket"; // import your socket hook
 
 const Settings = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [vibrationStrength, setVibrationStrength] = useState("Mid");
-  const [flashingDuration, setFlashingDuration] = useState("3s");
   const [missedAlerts, setMissedAlerts] = useState(true);
-  const [arduinoConnected, setArduinoConnected] = useState(false); // ✅ new state
+  const [arduinoConnected, setArduinoConnected] = useState(false); // new state
   const navigate = useNavigate();
   const { success } = useToast();
-  const { socket } = useSocket(); // ✅ access socket instance
+  const { socket } = useSocket(); // access socket instance
 
-  const vibrationOptions = ["Low", "Mid", "High"];
-  const durationOptions = ["1s", "3s", "5s"];
 
-  // ✅ listen for connection/disconnection events
+  // listen for connection/disconnection events
   useEffect(() => {
     if (!socket) return;
 
@@ -52,16 +48,6 @@ const Settings = () => {
       socket.off("disconnect", handleDisconnect);
     };
   }, [socket, success]);
-
-  const handleVibrationChange = (strength) => {
-    setVibrationStrength(strength);
-    success(`Vibration strength set to ${strength}`);
-  };
-
-  const handleDurationChange = (duration) => {
-    setFlashingDuration(duration);
-    success(`Flashing duration set to ${duration}`);
-  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -86,63 +72,8 @@ const Settings = () => {
           </div>
         </header>
 
-        <main className="p-4 space-y-6 max-w-2xl mx-auto">
-          {/* Vibration */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>Vibration</CardTitle>
-              <CardDescription>
-                Configure vibration strength for alerts
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Label className="mb-3 block">Strength</Label>
-              <div className="flex gap-2">
-                {vibrationOptions.map((option) => (
-                  <Button
-                    key={option}
-                    variant={
-                      vibrationStrength === option ? "default" : "outline"
-                    }
-                    size="sm"
-                    onClick={() => handleVibrationChange(option)}
-                    className="flex-1"
-                  >
-                    {option}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* LED */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle>LED</CardTitle>
-              <CardDescription>
-                Configure LED flash settings for visual alerts
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Label className="mb-3 block">Flashing duration</Label>
-              <div className="flex gap-2">
-                {durationOptions.map((option) => (
-                  <Button
-                    key={option}
-                    variant={
-                      flashingDuration === option ? "default" : "outline"
-                    }
-                    size="sm"
-                    onClick={() => handleDurationChange(option)}
-                    className="flex-1"
-                  >
-                    {option}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
+        <main className="p-4 space-y-6 max-w-2xl mx-auto">      
+          
           {/* Notifications */}
           <Card className="bg-card border-border">
             <CardHeader>
@@ -175,7 +106,7 @@ const Settings = () => {
             </CardContent>
           </Card>
 
-          {/* ✅ System Info */}
+          {/*System Info */}
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>System Information</CardTitle>
